@@ -1,70 +1,36 @@
-# Getting Started with Create React App
+**Redux** это библиотека для работы с состоянием приложение, проще говоря некоторое хранилище состояния.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Состояние выносится во внешнюю зависимость и каждая компонента берет зависимость из Redux.
 
-## Available Scripts
+Redux предполагает, что все состояние вашего приложения хранится в одном месте (store), и единственный путь изменить это состояние - это отобразить старое состояние в новое с помощью специальной функции - редьюсера.
+Эта функция имеет сигнатуру (old_state, action) => new_state, где action можно понимать как "рецепт" вашего действия, например "добавить пользователя в базу".
 
-In the project directory, you can run:
+Механизм рендеринга компонентов в react не знает явно о redux, для него лишь важно, что произошло изменение состояния тем или иным образом, на которое он должен отреагировать обновлением компонентов в соответствии с внутренней логикой.
 
-### `npm start`
+***Пишем redux за 7 строк***
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+```
+function createStore(reducer, initialState) {
+	let state = initialState
+	return {
+		dispatch: action => { state = reducer(state, action)},
+		getState: () => state,
+	}
+}
+```
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+***Что лучше хранить в стейте компонента, а что в редаксе?***
 
-### `npm test`
+В redux store стоит хранить данные в следующих случаях:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+1. Если данные редко изменяются.
+2. Если одни и те же данные используются в нескольких (больше 2-3) связанных компонента или в несвязанных.
+3. Если требуется отслеживать изменение данных
 
-### `npm run build`
+А в state хранить часто изменяющиеся данные:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+К этой категории относятся, например, параметры фильтрации, сортировки или флаг, отвечающий за отображение отдельных UI-элементов в приложении, например, выпадающий список или модальное окно (при условии, что оно не привязано к пользовательским настройкам). Сюда же можно отнести и данные заполняемой формы, пока они не отправлены на сервер.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Та как они захламляют глобальное хранилище и усложняют работу с ними.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+[Статья с подробным ответом](https://habr.com/ru/post/509118/)
